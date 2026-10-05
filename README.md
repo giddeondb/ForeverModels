@@ -11,6 +11,8 @@ after upgrading to 0.4.1. It stays dismissed across normal logouts and reloads.
 
 ## Character roster
 
+![Forever Models character roster with saved HD and SD preferences. Secondary names are redacted for privacy.](docs/images/character-roster-redacted.png)
+
 - Your current character is highlighted and listed first.
 - Click HD or SD to save immediately. The selected button says "(saved)".
 - Changing the current character applies the setting and offers Reload or Later.
