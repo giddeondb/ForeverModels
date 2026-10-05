@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: Forever Models
+## Author: GiddeonDB
+## X-License: BSD-3-Clause
+## Notes: Manage saved HD or SD models for each character.
+## Version: 0.6.0
+## SavedVariables: ForeverModelsAccountDB
+## SavedVariablesPerCharacter: ForeverModelsDB
+
+ForeverModels.lua

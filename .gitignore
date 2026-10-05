@@ -1,0 +1,10 @@
+backups/
+dist/
+*.zip
+*.luac
+.DS_Store
+__pycache__/
+.env
+.env.*
+.envrc
+.direnv/
