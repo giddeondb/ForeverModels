@@ -1,0 +1,33 @@
+name: Publish addon
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-releases
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Install Lua tools
+        run: sudo apt-get update && sudo apt-get install -y luajit lua5.1
+      - name: Test release automation
+        run: python3 -m unittest discover -s tests -p 'test_release.py' -v
+      - name: Reconcile and publish main commits
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 tools/release.py

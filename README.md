@@ -3,6 +3,9 @@
 Remember HD or SD models separately for each character in WoW Forever.
 Open the character roster with `/models`.
 
+**[Download latest version](https://github.com/giddeondb/ForeverModels/releases/latest/download/ForeverModels.zip)** ·
+[Release notes](https://github.com/giddeondb/ForeverModels/releases/latest)
+
 [Source on GitHub](https://github.com/giddeondb/ForeverModels) ·
 [Report an issue](https://github.com/giddeondb/ForeverModels/issues)
 
@@ -11,7 +14,7 @@ after upgrading to 0.4.1. It stays dismissed across normal logouts and reloads.
 
 ## Character roster
 
-![Forever Models character roster with saved HD and SD preferences. Secondary names are redacted for privacy.](docs/images/character-roster-redacted.png)
+![Forever Models character roster with saved HD and SD preferences. Secondary names are redacted for privacy.](https://raw.githubusercontent.com/giddeondb/ForeverModels/main/docs/images/character-roster-redacted.png)
 
 - Your current character is highlighted and listed first.
 - Click HD or SD to save immediately. The selected button says "(saved)".
@@ -40,14 +43,17 @@ Choosing HD or SD also resumes automatic switching for that character.
 
 ## Installation and updates
 
-Version 0.6.0 uses WoW's standard SavedVariables loader. No setup script,
+Since version 0.6.0, the addon uses WoW's standard SavedVariables loader. No setup script,
 filesystem links, or companion add-on are required. It targets interface 16001;
 native persistence was confirmed in-game on Forever beta 1.60.1.70009.
 
-1. Fully quit WoW.
+1. Download **ForeverModels.zip** using the link above, then fully quit WoW.
 2. Extract the release ZIP into `World of Warcraft/_classic_beta_/Interface/AddOns/`.
    The resulting path should be `AddOns/ForeverModels/ForeverModels.toc`.
 3. Start WoW, enable Forever Models in AddOns, and run `/models`.
+
+GitHub's automatic **Source code** archives are for developers. Install the
+attached addon ZIP instead.
 
 For updates, replace the existing ForeverModels folder with the new one.
 Keep your WTF folder: that is where WoW stores your preferences.
@@ -106,7 +112,10 @@ For future client updates:
 
 ## Release packaging
 
-Run `python tools/package.py` to build a standard installable ZIP under dist.
+Run `python tools/package.py` to build identical versioned and `ForeverModels.zip`
+installable archives under dist. Every new main commit automatically publishes a
+minor release. Release tags contain the generated version and changelog; main
+retains its development baseline. See [the publishing guide](https://github.com/giddeondb/ForeverModels/blob/main/PUBLISHING.md).
 Only the add-on Lua, TOC, README, changelog, and license are included. Tests, developer
 tools, saved settings, backups, and filesystem links are excluded.
 

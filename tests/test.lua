@@ -9,6 +9,10 @@ local function session(db, value, options)
     env.UnitFullName = function() return "Test", "Realm" end
     env.GetRealmName = function() return "Realm" end
     env.SlashCmdList = {}
+    env.C_AddOns = { GetAddOnMetadata = function(addon, key)
+        assert(addon == "ForeverModels" and key == "Version")
+        return options.version or "9.42.0"
+    end }
     env.print = function(text) messages[#messages + 1] = text end
     local widgets = {}
     local function widget(name)
@@ -340,6 +344,13 @@ test("restoration uses the account record if the legacy global is replaced after
     assert(account.characters["Player-test-undead"].mode == "1")
     s.command("sd")
     assert(account.characters["Player-test-undead"].mode == "0")
+end)
+
+test("status reads the installed TOC version", function()
+    local s = session(nil, "1", { version = "0.27.0" })
+    s.event("PLAYER_ENTERING_WORLD")
+    s.command("status")
+    assert(table.concat(s.messages):find("v0.27.0", 1, true))
 end)
 
 print(count .. " tests passed")

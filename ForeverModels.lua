@@ -170,7 +170,8 @@ end
 
 local function status()
     local version, build, _, interface = GetBuildInfo()
-    say("v0.6.0 | client " .. tostring(version) .. " build " .. tostring(build)
+    local addonVersion = C_AddOns.GetAddOnMetadata(ADDON, "Version") or "unknown"
+    say("v" .. addonVersion .. " | client " .. tostring(version) .. " build " .. tostring(build)
         .. " interface " .. tostring(interface))
     say("Remember: " .. (characterSettings.enabled and "on" or "off")
         .. " | saved: " .. label(characterSettings.mode)
