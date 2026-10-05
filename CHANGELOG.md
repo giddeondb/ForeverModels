@@ -1,5 +1,9 @@
 # Changes
 
+## 0.7.0
+
+- Publish automatic minor releases for main commits
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
