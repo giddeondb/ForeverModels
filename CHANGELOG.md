@@ -1,5 +1,9 @@
 # Changes
 
+## 0.8.0
+
+- Replace model reload prompts with character chat confirmations
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
