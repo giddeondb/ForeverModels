@@ -55,7 +55,7 @@ unchanged; it requires investigation before later commits can be released.
 
 Release notes retain the recorded September 29, 2026 in-game validation on
 Forever beta 1.60.1.70009. Automated checks do not claim a new in-game test.
-For client updates, test model changes and reload prompts, opposite preferences
+For client updates, test model changes and chat confirmations, opposite preferences
 on two characters, combat deferral, and persistence after a full client restart.
 
 ## Future hosting

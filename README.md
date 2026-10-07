@@ -18,14 +18,14 @@ after upgrading to 0.4.1. It stays dismissed across normal logouts and reloads.
 
 - Your current character is highlighted and listed first.
 - Click HD or SD to save immediately. The selected button says "(saved)".
-- Changing the current character applies the setting and offers Reload or Later.
+- Changing the current character applies the setting and confirms it in chat.
 - Changing another character saves its preference for its next login without
   changing your current client setting.
 - Only characters seen by this add-on appear. Log into missing characters once.
 - Larger rosters use Previous and Next buttons.
 
 The top of the window shows this character's saved choice, the client setting,
-and whether a reload is pending. Its Reload button completes a pending change.
+and the result of the latest change.
 
 ## Commands
 
@@ -34,7 +34,7 @@ and whether a reload is pending. Its Reload button completes a pending change.
 | `/models` | Open or close the character roster |
 | `/models hd` | Save and apply HD for the current character |
 | `/models sd` | Save and apply SD for the current character |
-| `/models status` | Show saved choice, client setting, setting at UI load, reload state, and character identity |
+| `/models status` | Show saved choice, client setting, latest result, and character identity |
 | `/models off` | Pause automatic switching and learning for the current character |
 | `/models on` | Resume automatic switching |
 | `/fmodels` | Alternative to `/models`, with the same arguments |
@@ -78,16 +78,16 @@ variables to disk on normal logout or UI reload.
 
 This controls Forever's account-wide model setting. It does not render individual
 races differently or change how other players see you. Switching is deferred
-during combat. The add-on never reloads automatically.
+during combat. Successful changes are confirmed in chat for the logged-in character,
+including automatic switching on login and changes applied after combat.
 
 Changes made through Blizzard's model setter while in-world are remembered
 when automatic switching is enabled. Calls made by another add-on cannot be
 distinguished from manual changes. Startup calls are ignored.
 
-The client setting is not a measurement of the visible model. A reload can be
-required before appearance matches the selected setting.
+The current Forever client applies model changes immediately without a UI reload.
 
-The API and reload behavior follow
+The API is documented in
 [Blizzard's Forever graphics UI source](https://github.com/Gethe/wow-ui-source/blob/c6e89983189e4f626f549204a23c2d2bea93080a/Interface/AddOns/Blizzard_Settings_Shared/Mainline/GraphicsOverrides.lua#L83).
 The add-on reads `C_GameRules.AccountHasSDEnabled()` and writes
 `C_GameRules.SetSDHDToggleValue(true)` for SD or false for HD.
@@ -99,9 +99,12 @@ Forever beta 1.60.1.70009 after removing the workaround. The acceptance test
 covered saved choices, editing another character, UI reload, character switching,
 and a full client restart.
 
+On October 6, 2026, the user confirmed in-game that model changes apply with
+a chat confirmation and no reload popup.
+
 Run `luajit tests/test.lua` for local regression tests. They cover separate saved
 characters, persistence across fresh sessions, legacy migration, failed writes,
-combat deferral, reload prompts, roster edits, and pagination. They emulate UI
+combat deferral, change notifications without reload prompts, roster edits, and pagination. They emulate UI
 widgets and client APIs; they do not verify rendering or actual client behavior.
 
 For future client updates:

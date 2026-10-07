@@ -1,6 +1,4 @@
 local ADDON = ...
-local loadedMode
-local needsReload = false
 local frame = CreateFrame("Frame")
 local ready, applying, pending = false, false, false
 local panel, refresh
@@ -65,28 +63,9 @@ local function update(text)
     if refresh then refresh() end
 end
 
--- Blizzard's graphics setting commits with Apply + UIReload.
-StaticPopupDialogs.FOREVER_MODELS_RELOAD = {
-    text = "Forever Models saved %s for this character. Reload the UI to finish applying it?",
-    button1 = "Reload", button2 = "Later",
-    OnAccept = function() ReloadUI() end,
-    timeout = 0, whileDead = true, hideOnEscape = true, preferredIndex = 3,
-}
-
-local function refreshReloadState()
-    local current = read()
-    needsReload = loadedMode ~= nil and current ~= nil and current ~= loadedMode
-    if not needsReload then StaticPopup_Hide("FOREVER_MODELS_RELOAD") end
-end
-
-local function reportApplied(announce, offerReload)
-    refreshReloadState()
-    if needsReload then
-        update(label(read()) .. " saved. Reload the UI to finish applying.")
-        if offerReload then StaticPopup_Show("FOREVER_MODELS_RELOAD", label(read())) end
-    else
-        update(label(read()) .. " selected.")
-    end
+local function reportApplied(announce)
+    update(label(read()) .. " models applied for " .. (characterSettings.name or "this character")
+        .. (characterSettings.realm and "-" .. characterSettings.realm or "") .. ".")
     if announce then say(lastResult) end
 end
 
@@ -111,7 +90,7 @@ local function apply(announce)
         return
     end
     if current == wanted then
-        reportApplied(announce, announce and needsReload)
+        reportApplied(announce)
         return
     end
     if InCombatLockdown and InCombatLockdown() then
@@ -128,7 +107,7 @@ local function apply(announce)
         say(lastResult .. (not ok and " " .. tostring(err) or ""))
         return
     end
-    reportApplied(announce, true)
+    reportApplied(true)
 end
 
 local function choose(mode)
@@ -175,9 +154,7 @@ local function status()
         .. " interface " .. tostring(interface))
     say("Remember: " .. (characterSettings.enabled and "on" or "off")
         .. " | saved: " .. label(characterSettings.mode)
-        .. " | client setting: " .. label(read())
-        .. " | setting at UI load: " .. label(loadedMode)
-        .. " | reload pending: " .. tostring(needsReload))
+        .. " | client setting: " .. label(read()))
     say("Character: " .. tostring(characterSettings.name) .. "-" .. tostring(characterSettings.realm)
         .. " | ID: " .. tostring(characterKey) .. " | storage: " .. storageSource)
     say("Persistence: Standard SavedVariables loader")
@@ -216,9 +193,7 @@ local function createPanel()
         return b
     end
 
-    local state = text(panel, "GameFontHighlight", 20, -42, 440)
-    local reload = button(panel, "ForeverModelsReloadButton", "Reload", 510, -44, 108,
-        function() ReloadUI() end)
+    local state = text(panel, "GameFontHighlight", 20, -42, 598)
     local note = text(panel, "GameFontHighlightSmall", 20, -94, 595)
     note:SetText("Click HD or SD to save. Other characters use that choice on their next login.")
     text(panel, "GameFontNormal", 20, -124, 360):SetText("Character / realm")
@@ -249,10 +224,9 @@ local function createPanel()
     refresh = function()
         state:SetText("This character: saved " .. label(characterSettings.mode)
             .. "  |  Client setting: " .. label(read())
-            .. "\n" .. (needsReload and "Reload pending" or "No reload pending")
+            .. "\n" .. lastResult
             .. (pending and "  |  Waiting for combat to end" or "")
             .. (characterSettings.enabled and "" or "  |  Automatic switching off"))
-        reload:SetEnabled(needsReload and not (InCombatLockdown and InCombatLockdown()))
         local list = roster()
         local pages = math.max(1, math.ceil(#list / PAGE_SIZE))
         page = math.max(1, math.min(page, pages))
@@ -307,8 +281,7 @@ frame:SetScript("OnEvent", function(_, event, arg1)
                 local wanted = isSD and "0" or "1"
                 if current == wanted then
                     characterSettings.mode = current
-                    -- Blizzard's own settings already provide their reload flow.
-                    reportApplied(false, false)
+                    reportApplied(false)
                 end
             end)
         end
@@ -318,7 +291,6 @@ frame:SetScript("OnEvent", function(_, event, arg1)
         initializeCharacter()
     elseif event == "PLAYER_ENTERING_WORLD" then
         -- Ignore startup setter calls; preserve the preference loaded from disk.
-        if not loadedMode then loadedMode = read() end
         apply(false)
         ready = characterKey ~= nil
         if ready and not characterSettings.helpShown then
