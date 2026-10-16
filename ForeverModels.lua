@@ -100,7 +100,16 @@ local function apply(announce)
         return
     end
     applying = true
-    local ok, err = pcall(C_GameRules.SetSDHDToggleValue, wanted == "0")
+    local usageLocation = Enum and Enum.SdToggleUsageLocationUI
+        and Enum.SdToggleUsageLocationUI.OptionsMenu
+    local ok, err
+    if usageLocation then
+        -- Match Blizzard's in-game graphics setting on clients requiring a source.
+        ok, err = pcall(C_GameRules.SetSDHDToggleValue, wanted == "0", usageLocation)
+    else
+        -- Older Forever clients expose only the one-argument setter.
+        ok, err = pcall(C_GameRules.SetSDHDToggleValue, wanted == "0")
+    end
     applying = false
     if not ok or read() ~= wanted then
         update("Could not apply " .. label(wanted) .. ". Your preference is still saved.")

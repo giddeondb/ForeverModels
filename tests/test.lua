@@ -9,6 +9,10 @@ local function session(db, value, options)
     env.UnitFullName = function() return "Test", "Realm" end
     env.GetRealmName = function() return "Realm" end
     env.SlashCmdList = {}
+    env.Enum = options.legacyAPI and {} or {
+        SdToggleUsageLocationUI = { OptionsMenu = 3 },
+    }
+    if options.noEnum then env.Enum = false end
     env.C_AddOns = { GetAddOnMetadata = function(addon, key)
         assert(addon == "ForeverModels" and key == "Version")
         return options.version or "9.42.0"
@@ -64,8 +68,14 @@ local function session(db, value, options)
     env.C_GameRules = {
         IsSDHDToggleEnabled = function() return value ~= nil end,
         AccountHasSDEnabled = function() return value == "0" end,
-        SetSDHDToggleValue = function(isSD)
+        SetSDHDToggleValue = function(isSD, ...)
             assert(type(isSD) == "boolean")
+            if options.legacyAPI then
+                assert(select("#", ...) == 0, "Legacy setter expects only the model choice")
+            else
+                assert(select("#", ...) == 1 and (...) == env.Enum.SdToggleUsageLocationUI.OptionsMenu,
+                    "bad argument #2: expected OptionsMenu usageLocation")
+            end
             if options.throw then error("restricted") end
             local wanted = isSD and "0" or "1"
             writes[#writes + 1] = wanted
@@ -83,7 +93,11 @@ local function session(db, value, options)
         live = function() return value end,
         popups = function() return popupCount end,
         external = function(v)
-            env.C_GameRules.SetSDHDToggleValue(v == "0")
+            if options.legacyAPI then
+                env.C_GameRules.SetSDHDToggleValue(v == "0")
+            else
+                env.C_GameRules.SetSDHDToggleValue(v == "0", env.Enum.SdToggleUsageLocationUI.OptionsMenu)
+            end
         end,
         endCombat = function()
             combat = false
@@ -103,6 +117,27 @@ test("first login captures without a write", function()
     local s = session(nil, "0")
     s.event("PLAYER_ENTERING_WORLD")
     assert(s.env.ForeverModelsDB.mode == "0" and #s.writes == 0)
+end)
+
+test("login restores HD and SD with the required usage location", function()
+    for _, mode in ipairs({ "0", "1" }) do
+        local s = session({ mode = mode }, mode == "0" and "1" or "0")
+        s.event("PLAYER_ENTERING_WORLD")
+        assert(s.live() == mode and #s.writes == 1)
+        assert(not table.concat(s.messages):find("Could not apply", 1, true))
+    end
+end)
+
+test("older clients without the usage location enum still switch models", function()
+    for _, noEnum in ipairs({ false, true }) do
+        local s = session({ mode = "1" }, "0", { legacyAPI = true, noEnum = noEnum })
+        s.event("PLAYER_ENTERING_WORLD")
+        assert(s.live() == "1" and #s.writes == 1)
+        s.command("sd")
+        assert(s.live() == "0" and #s.writes == 2)
+        s.external("1")
+        assert(s.env.ForeverModelsDB.mode == "1")
+    end
 end)
 
 test("two characters restore independent preferences across sessions", function()

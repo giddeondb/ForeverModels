@@ -88,9 +88,11 @@ distinguished from manual changes. Startup calls are ignored.
 The current Forever client applies model changes immediately without a UI reload.
 
 The API is documented in
-[Blizzard's Forever graphics UI source](https://github.com/Gethe/wow-ui-source/blob/c6e89983189e4f626f549204a23c2d2bea93080a/Interface/AddOns/Blizzard_Settings_Shared/Mainline/GraphicsOverrides.lua#L83).
+[Blizzard's Forever graphics UI source](https://github.com/Gethe/wow-ui-source/blob/b401e0332adfbf0460d319b06d8ea29279a941f1/Interface/AddOns/Blizzard_Settings_Shared/Mainline/GraphicsOverrides.lua#L96).
 The add-on reads `C_GameRules.AccountHasSDEnabled()` and writes
-`C_GameRules.SetSDHDToggleValue(true)` for SD or false for HD.
+`C_GameRules.SetSDHDToggleValue(isSD, Enum.SdToggleUsageLocationUI.OptionsMenu)`,
+with `isSD` true for SD or false for HD. Updated clients require the usage location
+argument. Older clients without that enum use the original one-argument call.
 
 ## Validation
 
@@ -102,8 +104,13 @@ and a full client restart.
 On October 6, 2026, the user confirmed in-game that model changes apply with
 a chat confirmation and no reload popup.
 
+On October 16, 2026, the user confirmed the usage-location compatibility fix
+worked in-game after installing the patched Lua file. The fix supplies the
+required `OptionsMenu` usage location when applying HD or SD on updated clients.
+
 Run `luajit tests/test.lua` for local regression tests. They cover separate saved
-characters, persistence across fresh sessions, legacy migration, failed writes,
+characters, persistence across fresh sessions, legacy migration, required usage
+location arguments and older-client compatibility, failed writes,
 combat deferral, change notifications without reload prompts, roster edits, and pagination. They emulate UI
 widgets and client APIs; they do not verify rendering or actual client behavior.
 
