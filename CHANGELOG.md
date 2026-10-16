@@ -1,5 +1,9 @@
 # Changes
 
+## 0.9.0
+
+- Fix HD/SD switching with required usageLocation on updated clients
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
