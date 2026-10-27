@@ -1,5 +1,9 @@
 # Changes
 
+## 0.15.0
+
+- Preserve the source license in CurseForge packages
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
