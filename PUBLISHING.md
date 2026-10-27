@@ -58,8 +58,41 @@ Forever beta 1.60.1.70009. Automated checks do not claim a new in-game test.
 For client updates, test model changes and chat confirmations, opposite preferences
 on two characters, combat deferral, and persistence after a full client restart.
 
-## Future hosting
+## CurseForge automatic packaging
 
-CurseForge and Wago are deferred. No project IDs, upload integrations, or hosting
-secrets are configured. When adding them, use the same validated installable
-ZIP and verify their current Forever client/version options before submission.
+CurseForge builds its own archive from the release tag's source. It does not
+upload the prebuilt GitHub ZIP. GitHub keeps the first-parent minor-release
+cadence above; CurseForge packaging runs independently and can start when the
+tag is pushed, before GitHub publishes its release assets. No CurseForge secret
+or upload action is needed in GitHub Actions.
+
+The repository's `.pkgmeta` sets `package-as: ForeverModels` and disables the
+extra nolib archive with `enable-nolib-creation: no`. Its `manual-changelog`
+uses `filename: CHANGELOG.md` and `markup-type: markdown`, and it sets
+`license-output: LICENSE`. It excludes `docs/`, `tests/`, `tools/`,
+`PUBLISHING.md`, `backups/`, and `dist/`. The packager excludes dot paths
+automatically. `ForeverModels.toc` is the only TOC and uses `Interface: 16001`;
+CurseForge releases must target only Forever version `1.60.1`.
+
+Before first enabling the webhook, finish any GitHub release backlog whose
+source snapshots predate `.pkgmeta`. Set up packaging in this order:
+
+1. Merge the packaging configuration and wait for **Publish addon** to finish
+   the GitHub release backlog, including the new configuration commit.
+2. Connect the GitHub repository to CurseForge automatic packaging and select
+   tag-only builds for Forever `1.60.1`. Enforce tag-only packaging in
+   CurseForge; GitHub's push event also sends branch pushes.
+3. Create a CurseForge API token and add a GitHub push webhook using
+   `https://www.curseforge.com/api/projects/{projectID}/package?token={token}`.
+   Replace the placeholders with the CurseForge project ID and API token.
+   Enable the webhook only after the GitHub backlog finishes.
+4. Trigger CurseForge packaging for the latest release tag containing
+   `.pkgmeta`. Use the existing workflow's tag; do not create a manual release
+   tag or bump the version.
+5. Inspect the publicly downloadable CurseForge archive. Verify one `ForeverModels/`
+   folder with only Lua, `ForeverModels.toc`, README, changelog, and the BSD
+   3-Clause license. Confirm the packaged TOC declares `Interface: 16001` and
+   the CurseForge file lists only the Forever flavor and version `1.60.1`.
+
+Follow the official [automatic packaging instructions](https://support.curseforge.com/support/solutions/articles/9000197281)
+and [`.pkgmeta` reference](https://support.curseforge.com/support/solutions/articles/9000197952-preparing-the-packagemeta-file).

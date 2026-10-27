@@ -1,0 +1,13 @@
+package-as: ForeverModels
+enable-nolib-creation: no
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+license-output: LICENSE
+ignore:
+  - backups
+  - dist
+  - docs
+  - tests
+  - tools
+  - PUBLISHING.md
