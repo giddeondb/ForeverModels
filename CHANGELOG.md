@@ -1,5 +1,9 @@
 # Changes
 
+## 0.14.0
+
+- Configure CurseForge packaging for Forever releases
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
