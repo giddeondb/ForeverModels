@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/giddeondb/ForeverModels/main/docs/images/logo-transparent.svg" alt="Forever Models logo, an SD to HD toggle switch" width="192"></p>
+<img align="right" src="https://raw.githubusercontent.com/giddeondb/ForeverModels/main/docs/images/logo-transparent.svg" alt="Forever Models logo, an SD to HD toggle switch" width="64">
 
 # Forever Models
 
