@@ -1,5 +1,9 @@
 # Changes
 
+## 0.16.0
+
+- Honor CI skip markers during release reconciliation
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
