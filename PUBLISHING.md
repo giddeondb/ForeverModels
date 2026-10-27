@@ -2,10 +2,16 @@
 
 ## GitHub releases
 
-Every new first-parent commit on `main` publishes a regular minor release,
-including documentation changes and merge commits. Branch commits brought in by
-a merge do not each create a release. Versioning starts at `0.7.0` and increments
-the highest numeric release tag's minor component, resetting patch to zero.
+Every new first-parent commit on `main` publishes a regular minor release unless
+its subject or body contains `[skip ci]` or `[ci skip]`. These markers also skip
+the commit during later catch-up and manual runs, before a version is allocated.
+Its changes are included in the next eligible release. Existing reserved tags
+and drafts still resume normally; published releases are never changed.
+
+Unmarked documentation changes and merge commits also publish releases. Branch
+commits brought in by a merge do not each create a release. Versioning starts at
+`0.7.0` and increments the highest numeric release tag's minor component,
+resetting patch to zero.
 Commits through `6131e75` predate automation and are not released retroactively.
 
 1. Make changes and run `luajit tests/test.lua`, `luac5.1 -p ForeverModels.lua`,

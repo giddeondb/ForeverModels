@@ -17,6 +17,7 @@ BASE = "6131e75a9b04443c1b1e6b78763c9a340944d6cd"
 BASE_VERSION = (0, 6, 0)
 VERSION = re.compile(r"v(\d+)\.(\d+)\.(\d+)")
 SOURCE = re.compile(r"^Source-Commit: ([0-9a-f]{40})$", re.MULTILINE)
+SKIP_CI = ("[skip ci]", "[ci skip]")
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -120,6 +121,11 @@ def main():
             sources[source] = tag
     releases = release_catalog()
     for source, tag in pending(commits, sources, releases):
+        if tag is None:
+            message = run("git", "show", "-s", "--format=%B", source)
+            if any(marker in message for marker in SKIP_CI):
+                print(f"Skipping {source[:7]}: CI skip marker", flush=True)
+                continue
         tag = tag or next_version(tags)
         version = tag[1:]
         print(f"Publishing {source[:7]} as {tag}", flush=True)

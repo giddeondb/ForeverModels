@@ -124,8 +124,10 @@ For future client updates:
 
 Run `python tools/package.py` to build identical versioned and `ForeverModels.zip`
 installable archives under dist. Every new main commit automatically publishes a
-minor release. Release tags contain the generated version and changelog; main
-retains its development baseline. See [the publishing guide](https://github.com/giddeondb/ForeverModels/blob/main/PUBLISHING.md).
+minor release unless its message contains `[skip ci]` or `[ci skip]`. Skipped
+commits stay skipped during later catch-up runs. Release tags contain the
+generated version and changelog; main retains its development baseline.
+See [the publishing guide](https://github.com/giddeondb/ForeverModels/blob/main/PUBLISHING.md).
 Only the add-on Lua, TOC, README, changelog, and license are included. Tests, developer
 tools, saved settings, backups, and filesystem links are excluded.
 

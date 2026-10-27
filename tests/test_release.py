@@ -72,6 +72,15 @@ class ReleaseTests(unittest.TestCase):
                     self.assertEqual(archive.read(f'ForeverModels/{name}'), (root / name).read_bytes())
 
     def test_real_git_backlog_resumes_after_reserved_tag(self):
+        self._check_real_git_backlog()
+
+    def test_real_git_marked_reserved_tags_and_drafts_resume(self):
+        for marker in ('[skip ci]', '[ci skip]'):
+            for draft in (False, True):
+                with self.subTest(marker=marker, draft=draft):
+                    self._check_real_git_backlog(marker, draft)
+
+    def _check_real_git_backlog(self, marker='', draft=False):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp) / 'repo'
             bare = Path(temp) / 'remote.git'
@@ -91,8 +100,13 @@ class ReleaseTests(unittest.TestCase):
                 dest.parent.mkdir(exist_ok=True)
                 dest.write_bytes((ROOT / name).read_bytes())
             git('add', '.')
-            git('commit', '-m', 'First addon commit')
+            git('commit', '-m', f'First addon commit {marker}'.strip())
             first = git('rev-parse', 'HEAD')
+            for skip in ('[skip ci]', '[ci skip]'):
+                for message in (f'Docs {skip} update', f'Docs update\n\nDetails {skip} here.'):
+                    with (root / 'README.md').open('a') as stream:
+                        stream.write(f'\n{message}\n')
+                    git('commit', '-am', message)
             with (root / 'README.md').open('a') as stream:
                 stream.write('\nDocumentation change.\n')
             git('commit', '-am', 'Second main commit')
@@ -108,7 +122,10 @@ class ReleaseTests(unittest.TestCase):
             def fake_publish(source, tag, existing, work, paths):
                 attempts.append((source, tag))
                 if len(attempts) == 1:
+                    if draft:
+                        catalog[tag] = {'draft': True}
                     raise RuntimeError('Interrupted after tag push')
+                self.assertEqual(existing, {'draft': True} if draft and source == first else None)
                 self.assertEqual(paths[0].read_bytes(), paths[1].read_bytes())
                 catalog[tag] = {'draft': False}
             with patch.object(release, 'BASE', base), \
@@ -116,12 +133,22 @@ class ReleaseTests(unittest.TestCase):
                  patch.object(release, 'release_catalog', side_effect=lambda: catalog.copy()), \
                  patch.object(release, 'publish', side_effect=fake_publish), \
                  patch.dict(os.environ, {'GITHUB_ACTIONS': 'true'}):
-                with self.assertRaisesRegex(RuntimeError, 'Interrupted'):
+                # Simulate a reservation made before skip markers were honored.
+                with patch.object(release, 'SKIP_CI', ()), \
+                     self.assertRaisesRegex(RuntimeError, 'Interrupted'):
                     release.main()
                 self.assertEqual(git('tag', '--list'), 'v0.7.0')
-                release.main()
-                release.main()  # Completed releases must not be republished.
-            self.assertEqual(attempts, [(first, 'v0.7.0'), (first, 'v0.7.0'), (second, 'v0.8.0')])
+                reserved_sha = git('rev-parse', 'v0.7.0')
+                expected = [(first, 'v0.7.0'), (first, 'v0.7.0'), (second, 'v0.8.0')]
+                for _ in range(3):
+                    release.main()
+                    self.assertEqual(attempts, expected)
+                    self.assertEqual(sorted(git('tag', '--list').splitlines()), ['v0.7.0', 'v0.8.0'])
+                    self.assertEqual(git('rev-parse', 'v0.7.0'), reserved_sha)
+                    self.assertEqual(git('ls-remote', '--tags', 'origin').splitlines(), [
+                        f'{reserved_sha}\trefs/tags/v0.7.0',
+                        f'{git("rev-parse", "v0.8.0")}\trefs/tags/v0.8.0',
+                    ])
             self.assertEqual(git('rev-parse', 'main'), second)
             self.assertEqual(git('rev-parse', 'v0.7.0^'), first)
             self.assertEqual(git('rev-parse', 'v0.8.0^'), second)
