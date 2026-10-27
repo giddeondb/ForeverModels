@@ -1,3 +1,5 @@
+<p align="center"><img src="https://raw.githubusercontent.com/giddeondb/ForeverModels/main/docs/images/logo-transparent.svg" alt="Forever Models logo, an SD to HD toggle switch" width="192"></p>
+
 # Forever Models
 
 Remember HD or SD models separately for each character in WoW Forever.
