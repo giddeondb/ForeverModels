@@ -3,7 +3,7 @@
 ## Author: GiddeonDB
 ## X-License: BSD-3-Clause
 ## Notes: Manage saved HD or SD models for each character.
-## Version: 0.6.0
+## Version: 0.13.0
 ## SavedVariables: ForeverModelsAccountDB
 ## SavedVariablesPerCharacter: ForeverModelsDB
 

@@ -1,5 +1,9 @@
 # Changes
 
+## 0.13.0
+
+- Move the README logo inside the heading so the rule clears it [skip ci]
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
