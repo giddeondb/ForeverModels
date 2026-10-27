@@ -68,8 +68,9 @@ or upload action is needed in GitHub Actions.
 
 The repository's `.pkgmeta` sets `package-as: ForeverModels` and disables the
 extra nolib archive with `enable-nolib-creation: no`. Its `manual-changelog`
-uses `filename: CHANGELOG.md` and `markup-type: markdown`, and it sets
-`license-output: LICENSE`. It excludes `docs/`, `tests/`, `tools/`,
+uses `filename: CHANGELOG.md` and `markup-type: markdown`. The tracked `LICENSE`
+is packaged directly; omit `license-output` so CurseForge does not replace it
+with the project's formatted license text. It excludes `docs/`, `tests/`, `tools/`,
 `PUBLISHING.md`, `backups/`, and `dist/`. The packager excludes dot paths
 automatically. `ForeverModels.toc` is the only TOC and uses `Interface: 16001`;
 CurseForge releases must target only Forever version `1.60.1`.
