@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.0
+
+- Bump README logo to 96px [skip ci]
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
