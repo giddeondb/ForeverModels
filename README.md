@@ -1,6 +1,4 @@
-<img align="right" src="https://raw.githubusercontent.com/giddeondb/ForeverModels/main/docs/images/logo-transparent.svg" alt="Forever Models logo, an SD to HD toggle switch" width="96">
-
-# Forever Models
+# Forever Models <img align="right" src="https://raw.githubusercontent.com/giddeondb/ForeverModels/main/docs/images/logo-transparent.svg" alt="Forever Models logo, an SD to HD toggle switch" width="96">
 
 Remember HD or SD models separately for each character in WoW Forever.
 Open the character roster with `/models`.
