@@ -1,5 +1,9 @@
 # Changes
 
+## 0.10.0
+
+- Add logo and show it at the top of the README [skip ci]
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
