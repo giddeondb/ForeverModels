@@ -1,5 +1,9 @@
 # Changes
 
+## 0.17.0
+
+- Add gear icon to the AddOns menu
+
 ## 0.6.0
 
 - Use standard WoW installation and SavedVariables persistence.
