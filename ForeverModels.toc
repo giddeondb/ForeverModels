@@ -1,5 +1,6 @@
 ## Interface: 16001
 ## Title: Forever Models
+## IconTexture: Interface\Icons\INV_Misc_Gear_01
 ## Author: GiddeonDB
 ## X-License: BSD-3-Clause
 ## Notes: Manage saved HD or SD models for each character.
